@@ -63,7 +63,7 @@ firestore_err_t firestore_get_collection(char *pcCollectionId,
       {
         s16HttpCode = esp_http_client_get_status_code(stCtx.pstHttpClient);
         ESP_LOGI(TAG,
-                 "HTTP code: %d, content_length: %d",
+                 "HTTP code: %d, content_length: %lld",
                  s16HttpCode,
                  esp_http_client_get_content_length(stCtx.pstHttpClient));
         if(200 != s16HttpCode)
@@ -125,7 +125,7 @@ firestore_err_t firestore_get_document(char *pcCollectionId,
       {
         s16HttpCode = esp_http_client_get_status_code(stCtx.pstHttpClient);
         ESP_LOGI(TAG,
-                 "HTTP code: %d, content_length: %d",
+                 "HTTP code: %d, content_length: %lld",
                  s16HttpCode,
                  esp_http_client_get_content_length(stCtx.pstHttpClient));
         if(200 != s16HttpCode)
@@ -189,7 +189,7 @@ firestore_err_t firestore_add_document(char *pcCollectionId,
       {
         s16HttpCode = esp_http_client_get_status_code(stCtx.pstHttpClient);
         ESP_LOGI(TAG,
-                 "HTTP PATCH Status = %d, content_length = %d",
+                 "HTTP PATCH Status = %d, content_length = %lld",
                  esp_http_client_get_status_code(stCtx.pstHttpClient),
                  esp_http_client_get_content_length(stCtx.pstHttpClient));
         if(200 != s16HttpCode)
@@ -253,7 +253,7 @@ firestore_err_t firestore_update_document(char *pcCollectionId,
       {
         s16HttpCode = esp_http_client_get_status_code(stCtx.pstHttpClient);
         ESP_LOGI(TAG,
-                 "HTTP PATCH Status = %d, content_length = %d",
+                 "HTTP PATCH Status = %d, content_length = %lld",
                  esp_http_client_get_status_code(stCtx.pstHttpClient),
                  esp_http_client_get_content_length(stCtx.pstHttpClient));
         if(200 != s16HttpCode)
@@ -312,7 +312,7 @@ firestore_err_t firestore_delete_document(char *pcCollectionId, char *pcDocument
       {
         s16HttpCode = esp_http_client_get_status_code(stCtx.pstHttpClient);
         ESP_LOGI(TAG,
-                 "HTTP code: %d, content_length: %d",
+                 "HTTP code: %d, content_length: %lld",
                  s16HttpCode,
                  esp_http_client_get_content_length(stCtx.pstHttpClient));
         if(200 != s16HttpCode)
@@ -380,6 +380,8 @@ esp_err_t _firestore_http_event_handler(esp_http_client_event_t *pstEvent)
   case HTTP_EVENT_DISCONNECTED:
     ESP_LOGI(TAG, "HTTP connection is closed");
     break;
+  default:
+    ESP_LOGW(TAG, "HTTP Event Redirected");
   }
   return s32RetVal;
 }
