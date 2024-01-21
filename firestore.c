@@ -5,7 +5,7 @@
 #include "firestore.h"
 #include "config.h"
 
-#define TAG                                      "FIRESTORE"
+#define TAG                                      __FILE__
 
 esp_err_t _firestore_http_event_handler(esp_http_client_event_t *pstEvent);
 
@@ -17,14 +17,15 @@ typedef struct
   uint32_t u32HttpBodyLen;
   esp_http_client_handle_t pstHttpClient;
   esp_http_client_config_t stHttpconfig;
+  int16_t s16LastHttpCode;
 }firestore_ctx_t;
 
 static firestore_ctx_t stCtx;
 
 firestore_err_t firestore_init(void)
 {
-#ifndef FIRESTORE_DEBUG
-  esp_log_level_set("FIRESTORE", ESP_LOG_NONE);
+#ifdef CONFIG_CLOUD_FIRESTORE_LIB_DEBUG
+  esp_log_level_set(TAG, ESP_LOG_DEBUG);
 #endif /* FIRESTORE_DEBUG */
   memset(&stCtx, 0x00, sizeof(stCtx));
   stCtx.stHttpconfig.host = FIRESTORE_HOSTNAME;
@@ -41,7 +42,7 @@ firestore_err_t firestore_get_collection(char *pcCollectionId,
                                          char **ppcDocs,
                                          uint32_t *pu32DocsLen)
 {
-  int16_t s16HttpCode;
+
   int32_t s32Length;
   firestore_err_t eRetVal;
 
@@ -61,14 +62,14 @@ firestore_err_t firestore_get_collection(char *pcCollectionId,
       stCtx.pstHttpClient = esp_http_client_init(&stCtx.stHttpconfig);
       if(ESP_OK == esp_http_client_perform(stCtx.pstHttpClient))
       {
-        s16HttpCode = esp_http_client_get_status_code(stCtx.pstHttpClient);
+        stCtx.s16LastHttpCode = esp_http_client_get_status_code(stCtx.pstHttpClient);
         ESP_LOGI(TAG,
                  "HTTP code: %d, content_length: %lld",
-                 s16HttpCode,
+                 stCtx.s16LastHttpCode,
                  esp_http_client_get_content_length(stCtx.pstHttpClient));
-        if(200 != s16HttpCode)
+        if(200 != stCtx.s16LastHttpCode)
         {
-          ESP_LOGE(TAG, "Firestore REST API call failed with HTTP code: %d", s16HttpCode);
+          ESP_LOGE(TAG, "Firestore REST API call failed with HTTP code: %d", stCtx.s16LastHttpCode);
           eRetVal = FIRESTORE_ERR_HTTP;
         }
         else
@@ -102,7 +103,7 @@ firestore_err_t firestore_get_document(char *pcCollectionId,
                                        char **ppcDocument,
                                        uint32_t *pu32DocumentLen)
 {
-  int16_t s16HttpCode;
+  
   int32_t s32Length;
   firestore_err_t eRetVal;
 
@@ -123,14 +124,14 @@ firestore_err_t firestore_get_document(char *pcCollectionId,
       stCtx.pstHttpClient = esp_http_client_init(&stCtx.stHttpconfig);
       if(ESP_OK == esp_http_client_perform(stCtx.pstHttpClient))
       {
-        s16HttpCode = esp_http_client_get_status_code(stCtx.pstHttpClient);
+        stCtx.s16LastHttpCode = esp_http_client_get_status_code(stCtx.pstHttpClient);
         ESP_LOGI(TAG,
                  "HTTP code: %d, content_length: %lld",
-                 s16HttpCode,
+                 stCtx.s16LastHttpCode,
                  esp_http_client_get_content_length(stCtx.pstHttpClient));
-        if(200 != s16HttpCode)
+        if(200 != stCtx.s16LastHttpCode)
         {
-          ESP_LOGE(TAG, "Firestore REST API call failed with HTTP code: %d", s16HttpCode);
+          ESP_LOGE(TAG, "Firestore REST API call failed with HTTP code: %d", stCtx.s16LastHttpCode);
           eRetVal = FIRESTORE_ERR_HTTP;
         }
         else
@@ -163,7 +164,7 @@ firestore_err_t firestore_add_document(char *pcCollectionId,
                                        char *pcDocument,
                                        uint32_t *pu32DocumentLen)
 {
-  int16_t s16HttpCode;
+  
   int32_t s32Length;
   firestore_err_t eRetVal;
 
@@ -187,14 +188,14 @@ firestore_err_t firestore_add_document(char *pcCollectionId,
       esp_http_client_set_post_field(stCtx.pstHttpClient, pcDocument, strlen(pcDocument));
       if(ESP_OK == esp_http_client_perform(stCtx.pstHttpClient))
       {
-        s16HttpCode = esp_http_client_get_status_code(stCtx.pstHttpClient);
+        stCtx.s16LastHttpCode = esp_http_client_get_status_code(stCtx.pstHttpClient);
         ESP_LOGI(TAG,
                  "HTTP PATCH Status = %d, content_length = %lld",
                  esp_http_client_get_status_code(stCtx.pstHttpClient),
                  esp_http_client_get_content_length(stCtx.pstHttpClient));
-        if(200 != s16HttpCode)
+        if(200 != stCtx.s16LastHttpCode)
         {
-          ESP_LOGE(TAG, "Firestore REST API call failed with HTTP code: %d", s16HttpCode);
+          ESP_LOGE(TAG, "Firestore REST API call failed with HTTP code: %d", stCtx.s16LastHttpCode);
           eRetVal = FIRESTORE_ERR_HTTP;
         }
         else
@@ -227,7 +228,7 @@ firestore_err_t firestore_update_document(char *pcCollectionId,
                                           char *pcDocument,
                                           uint32_t *pu32DocumentLen)
 {
-  int16_t s16HttpCode;
+  
   int32_t s32Length;
   firestore_err_t eRetVal;
 
@@ -251,14 +252,14 @@ firestore_err_t firestore_update_document(char *pcCollectionId,
       esp_http_client_set_post_field(stCtx.pstHttpClient, pcDocument, strlen(pcDocument));
       if(ESP_OK == esp_http_client_perform(stCtx.pstHttpClient))
       {
-        s16HttpCode = esp_http_client_get_status_code(stCtx.pstHttpClient);
+        stCtx.s16LastHttpCode = esp_http_client_get_status_code(stCtx.pstHttpClient);
         ESP_LOGI(TAG,
                  "HTTP PATCH Status = %d, content_length = %lld",
                  esp_http_client_get_status_code(stCtx.pstHttpClient),
                  esp_http_client_get_content_length(stCtx.pstHttpClient));
-        if(200 != s16HttpCode)
+        if(200 != stCtx.s16LastHttpCode)
         {
-          ESP_LOGE(TAG, "Firestore REST API call failed with HTTP code: %d", s16HttpCode);
+          ESP_LOGE(TAG, "Firestore REST API call failed with HTTP code: %d", stCtx.s16LastHttpCode);
           eRetVal = FIRESTORE_ERR_HTTP;
         }
         else
@@ -288,7 +289,7 @@ firestore_err_t firestore_update_document(char *pcCollectionId,
 
 firestore_err_t firestore_delete_document(char *pcCollectionId, char *pcDocumentId)
 {
-  int16_t s16HttpCode;
+  
   int32_t s32Length;
   firestore_err_t eRetVal;
 
@@ -310,14 +311,14 @@ firestore_err_t firestore_delete_document(char *pcCollectionId, char *pcDocument
       esp_http_client_set_method(stCtx.pstHttpClient, HTTP_METHOD_DELETE);
       if(ESP_OK == esp_http_client_perform(stCtx.pstHttpClient))
       {
-        s16HttpCode = esp_http_client_get_status_code(stCtx.pstHttpClient);
+        stCtx.s16LastHttpCode = esp_http_client_get_status_code(stCtx.pstHttpClient);
         ESP_LOGI(TAG,
                  "HTTP code: %d, content_length: %lld",
-                 s16HttpCode,
+                 stCtx.s16LastHttpCode,
                  esp_http_client_get_content_length(stCtx.pstHttpClient));
-        if(200 != s16HttpCode)
+        if(200 != stCtx.s16LastHttpCode)
         {
-          ESP_LOGE(TAG, "Firestore REST API call failed with HTTP code: %d", s16HttpCode);
+          ESP_LOGE(TAG, "Firestore REST API call failed with HTTP code: %d", stCtx.s16LastHttpCode);
           eRetVal = FIRESTORE_ERR_HTTP;
         }
         else
@@ -342,6 +343,11 @@ firestore_err_t firestore_delete_document(char *pcCollectionId, char *pcDocument
   stCtx.u32HttpBodyLen = 0;
   esp_http_client_cleanup(stCtx.pstHttpClient);
   return eRetVal;
+}
+
+int16_t firestore_get_last_http_err()
+{
+  return stCtx.s16LastHttpCode;
 }
 
 esp_err_t _firestore_http_event_handler(esp_http_client_event_t *pstEvent)
