@@ -367,7 +367,7 @@ esp_err_t _firestore_http_event_handler(esp_http_client_event_t *pstEvent)
     ESP_LOGI(TAG, "All HTTP headers are sent to server");
     break;
   case HTTP_EVENT_ON_HEADER:
-    ESP_LOGI(TAG, "HTTP header received");
+    ESP_LOGI(TAG, "HTTP header received: \t%s:%s",pstEvent->header_key,pstEvent->header_value);
     break;
   case HTTP_EVENT_ON_DATA:
     /* If user_data buffer is configured, copy the response into it */
