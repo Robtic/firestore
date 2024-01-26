@@ -28,12 +28,17 @@ firestore_err_t firestore_init(void)
   esp_log_level_set(TAG, ESP_LOG_DEBUG);
 #endif /* FIRESTORE_DEBUG */
   memset(&stCtx, 0x00, sizeof(stCtx));
-  stCtx.stHttpconfig.host = FIRESTORE_HOSTNAME;
+  stCtx.stHttpconfig.host = CONFIG_CLOUD_FIRESTORE_HOSTNAME;
+  stCtx.stHttpconfig.port = CONFIG_CLOUD_FIRESTORE_HOST_PORT;
   stCtx.stHttpconfig.buffer_size = FIRESTORE_HTTP_INTERNAL_RX_BUF_SIZE;
   stCtx.stHttpconfig.buffer_size_tx = FIRESTORE_HTTP_INTERNAL_TX_BUF_SIZE;
   stCtx.stHttpconfig.cert_pem = FIRESTORE_FIREBASE_CA_CERT_PEM;
   stCtx.stHttpconfig.event_handler = _firestore_http_event_handler;
+#ifdef CONFIG_CLOUD_FIRESTORE_USE_SSL
   stCtx.stHttpconfig.transport_type = HTTP_TRANSPORT_OVER_SSL;
+#else
+  stCtx.stHttpconfig.transport_type = HTTP_TRANSPORT_OVER_TCP;
+#endif
   stCtx.stHttpconfig.user_data = stCtx.tcHttpBody;
   return FIRESTORE_OK;
 }
@@ -52,9 +57,9 @@ firestore_err_t firestore_get_collection(char *pcCollectionId,
     s32Length = snprintf(stCtx.tcPath,
                          FIRESTORE_HTTP_PATH_SIZE,
                          "/v1/projects/%s/databases/(default)/documents/%s?key=%s",
-                         FIRESTORE_FIREBASE_PROJECT_ID,
+                         CONFIG_CLOUD_FIRESTORE_PROJECT_ID,
                          pcCollectionId,
-                         FIRESTORE_FIREBASE_API_KEY);
+                         CONFIG_CLOUD_FIRESTORE_API_KEY);
     if(s32Length > 0)
     {
       stCtx.stHttpconfig.path = stCtx.tcPath;
@@ -113,10 +118,10 @@ firestore_err_t firestore_get_document(char *pcCollectionId,
     s32Length = snprintf(stCtx.tcPath,
                          FIRESTORE_HTTP_PATH_SIZE,
                          "/v1/projects/%s/databases/(default)/documents/%s/%s?key=%s",
-                         FIRESTORE_FIREBASE_PROJECT_ID,
+                         CONFIG_CLOUD_FIRESTORE_PROJECT_ID,
                          pcCollectionId,
                          pcDocumentId,
-                         FIRESTORE_FIREBASE_API_KEY);
+                         CONFIG_CLOUD_FIRESTORE_API_KEY);
     if(s32Length > 0)
     {
       stCtx.stHttpconfig.path = stCtx.tcPath;
@@ -174,10 +179,10 @@ firestore_err_t firestore_add_document(char *pcCollectionId,
     s32Length = snprintf(stCtx.tcPath,
                          FIRESTORE_HTTP_PATH_SIZE,
                          "/v1/projects/%s/databases/(default)/documents/%s?documentId=%s&key=%s",
-                         FIRESTORE_FIREBASE_PROJECT_ID,
+                         CONFIG_CLOUD_FIRESTORE_PROJECT_ID,
                          pcCollectionId,
                          pcDocumentId,
-                         FIRESTORE_FIREBASE_API_KEY);
+                         CONFIG_CLOUD_FIRESTORE_API_KEY);
     if(s32Length > 0)
     {
       stCtx.stHttpconfig.path = stCtx.tcPath;
@@ -237,9 +242,9 @@ firestore_err_t firestore_add_document_autogen(char *pcCollectionId,
     s32Length = snprintf(stCtx.tcPath,
                          FIRESTORE_HTTP_PATH_SIZE,
                          "/v1/projects/%s/databases/(default)/documents/%s?key=%s",
-                         FIRESTORE_FIREBASE_PROJECT_ID,
+                         CONFIG_CLOUD_FIRESTORE_PROJECT_ID,
                          pcCollectionId,
-                         FIRESTORE_FIREBASE_API_KEY);
+                         CONFIG_CLOUD_FIRESTORE_API_KEY);
     if(s32Length > 0)
     {
       stCtx.stHttpconfig.path = stCtx.tcPath;
@@ -300,10 +305,10 @@ firestore_err_t firestore_update_document(char *pcCollectionId,
     s32Length = snprintf(stCtx.tcPath,
                          FIRESTORE_HTTP_PATH_SIZE,
                          "/v1/projects/%s/databases/(default)/documents/%s/%s?key=%s",
-                         FIRESTORE_FIREBASE_PROJECT_ID,
+                         CONFIG_CLOUD_FIRESTORE_PROJECT_ID,
                          pcCollectionId,
                          pcDocumentId,
-                         FIRESTORE_FIREBASE_API_KEY);
+                         CONFIG_CLOUD_FIRESTORE_API_KEY);
     if(s32Length > 0)
     {
       stCtx.stHttpconfig.path = stCtx.tcPath;
@@ -361,10 +366,10 @@ firestore_err_t firestore_delete_document(char *pcCollectionId, char *pcDocument
     s32Length = snprintf(stCtx.tcPath,
                          FIRESTORE_HTTP_PATH_SIZE,
                          "/v1/projects/%s/databases/(default)/documents/%s/%s?key=%s",
-                         FIRESTORE_FIREBASE_PROJECT_ID,
+                         CONFIG_CLOUD_FIRESTORE_PROJECT_ID,
                          pcCollectionId,
                          pcDocumentId,
-                         FIRESTORE_FIREBASE_API_KEY);
+                         CONFIG_CLOUD_FIRESTORE_API_KEY);
     if(s32Length > 0)
     {
       stCtx.stHttpconfig.path = stCtx.tcPath;

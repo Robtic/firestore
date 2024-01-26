@@ -1,10 +1,6 @@
 #ifndef __CONFIG_H__
 #define __CONFIG_H__
 
-#ifndef FIRESTORE_HOSTNAME
-#define FIRESTORE_HOSTNAME                       "firestore.googleapis.com"
-#endif /* FIRESTORE_HOSTNAME */
-
 #ifndef FIRESTORE_HTTP_INTERNAL_TX_BUF_SIZE
 #define FIRESTORE_HTTP_INTERNAL_TX_BUF_SIZE      1024
 #endif /* FIRESTORE_HTTP_INTERNAL_TX_BUF_SIZE */
@@ -20,14 +16,6 @@
 #ifndef FIRESTORE_HTTP_PATH_SIZE
 #define FIRESTORE_HTTP_PATH_SIZE                 256
 #endif /* FIRESTORE_HTTP_PATH_SIZE */
-
-#ifndef FIRESTORE_FIREBASE_PROJECT_ID
-#define FIRESTORE_FIREBASE_PROJECT_ID            CONFIG_CLOUD_FIRESTORE_PROJECT_ID
-#endif /* FIRESTORE_FIREBASE_PROJECT_ID */
-
-#ifndef FIRESTORE_FIREBASE_API_KEY
-#define FIRESTORE_FIREBASE_API_KEY               CONFIG_CLOUD_FIRESTORE_API_KEY
-#endif /* FIRESTORE_FIREBASE_API_KEY */
 
 #ifndef FIRESTORE_FIREBASE_CA_CERT_PEM
 /* openssl s_client -showcerts -verify 5 -connect edgecert.googleapis.com:443 < /dev/null */
