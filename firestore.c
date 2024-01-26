@@ -159,7 +159,7 @@ firestore_err_t firestore_get_document(char *pcCollectionId,
   return eRetVal;
 }
 
-firestore_err_t firestore_add_document(char *pcCollectionId,
+firestore_err_t firestore_add_document_autogen(char *pcCollectionId,
                                        char *pcDocumentId,
                                        char *pcDocument,
                                        uint32_t *pu32DocumentLen)
@@ -177,6 +177,68 @@ firestore_err_t firestore_add_document(char *pcCollectionId,
                          FIRESTORE_FIREBASE_PROJECT_ID,
                          pcCollectionId,
                          pcDocumentId,
+                         FIRESTORE_FIREBASE_API_KEY);
+    if(s32Length > 0)
+    {
+      stCtx.stHttpconfig.path = stCtx.tcPath;
+      ESP_LOGI(TAG, "HTTP path: %s", stCtx.stHttpconfig.path);
+      stCtx.pstHttpClient = esp_http_client_init(&stCtx.stHttpconfig);
+      esp_http_client_set_method(stCtx.pstHttpClient, HTTP_METHOD_POST);
+      esp_http_client_set_header(stCtx.pstHttpClient, "Content-Type", "application/json");
+      esp_http_client_set_post_field(stCtx.pstHttpClient, pcDocument, strlen(pcDocument));
+      if(ESP_OK == esp_http_client_perform(stCtx.pstHttpClient))
+      {
+        stCtx.s16LastHttpCode = esp_http_client_get_status_code(stCtx.pstHttpClient);
+        ESP_LOGI(TAG,
+                 "HTTP PATCH Status = %d, content_length = %lld",
+                 esp_http_client_get_status_code(stCtx.pstHttpClient),
+                 esp_http_client_get_content_length(stCtx.pstHttpClient));
+        if(200 != stCtx.s16LastHttpCode)
+        {
+          ESP_LOGE(TAG, "Firestore REST API call failed with HTTP code: %d", stCtx.s16LastHttpCode);
+          eRetVal = FIRESTORE_ERR_HTTP;
+        }
+        else
+        {
+          pcDocument = stCtx.tcHttpBody;
+          *pu32DocumentLen = stCtx.u32HttpBodyLen;
+        }
+      }
+      else
+      {
+        eRetVal = FIRESTORE_ERR_HTTP;
+      }
+    }
+    else
+    {
+      eRetVal = FIRESTORE_ERR;
+    }
+  }
+  else
+  {
+    eRetVal = FIRESTORE_ERR_ARG;
+  }
+  stCtx.u32HttpBodyLen = 0;
+  esp_http_client_cleanup(stCtx.pstHttpClient);
+  return eRetVal;
+}
+
+firestore_err_t firestore_add_document_autogen(char *pcCollectionId,
+                                       char *pcDocument,
+                                       uint32_t *pu32DocumentLen)
+{
+  
+  int32_t s32Length;
+  firestore_err_t eRetVal;
+
+  eRetVal = FIRESTORE_OK;
+  if(pcCollectionId)
+  {
+    s32Length = snprintf(stCtx.tcPath,
+                         FIRESTORE_HTTP_PATH_SIZE,
+                         "/v1/projects/%s/databases/(default)/documents/%s?key=%s",
+                         FIRESTORE_FIREBASE_PROJECT_ID,
+                         pcCollectionId,
                          FIRESTORE_FIREBASE_API_KEY);
     if(s32Length > 0)
     {
