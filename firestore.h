@@ -26,7 +26,7 @@ firestore_err_t firestore_add_document(char *pcCollectionId,
                                        char *pcDocumentId,
                                        char *pcDocument,
                                        uint32_t *pu32DocumentLen);
-firestore_err_t firestore_add_document(char *pcCollectionId,
+firestore_err_t firestore_add_document_autogen(char *pcCollectionId,
                                        char *pcDocument,
                                        uint32_t *pu32DocumentLen);
 firestore_err_t firestore_update_document(char *pcCollectionId,

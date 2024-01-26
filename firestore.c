@@ -159,7 +159,7 @@ firestore_err_t firestore_get_document(char *pcCollectionId,
   return eRetVal;
 }
 
-firestore_err_t firestore_add_document_autogen(char *pcCollectionId,
+firestore_err_t firestore_add_document(char *pcCollectionId,
                                        char *pcDocumentId,
                                        char *pcDocument,
                                        uint32_t *pu32DocumentLen)
