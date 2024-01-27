@@ -33,7 +33,10 @@ firestore_err_t firestore_update_document(char *pcCollectionId,
                                           char *pcDocumentId,
                                           char *pcDocument,
                                           uint32_t *pu32DocumentLen);
-firestore_err_t firestore_delete_document(char *pcCollectionId, char *pcDocumentId);
+firestore_err_t firestore_delete_document(char *pcCollectionId,
+                                          char *pcDocumentId);
+firestore_err_t firestore_run_query(char *pcDocument,
+                                    uint32_t *pu32DocumentLen);
 int16_t firestore_get_last_http_err();
 
 #endif /* __FIRESTORE_H__ */
