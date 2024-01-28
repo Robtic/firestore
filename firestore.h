@@ -33,9 +33,14 @@ firestore_err_t firestore_update_document(char *pcCollectionId,
                                           char *pcDocumentId,
                                           char *pcDocument,
                                           uint32_t *pu32DocumentLen);
+firestore_err_t firestore_ack_action_list(char *pcCollectionId,
+                                          char *pcDocumentId,
+                                          char *pcDocument,
+                                          uint32_t *pu32DocumentLen);
 firestore_err_t firestore_delete_document(char *pcCollectionId,
                                           char *pcDocumentId);
-firestore_err_t firestore_run_query(char *pcDocument,
+firestore_err_t firestore_run_query(char **ppcDocument,
+                                    char *pcDocument,
                                     uint32_t *pu32DocumentLen);
 int16_t firestore_get_last_http_err();
 
