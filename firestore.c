@@ -25,7 +25,7 @@ static firestore_ctx_t stCtx;
 firestore_err_t firestore_init(void)
 {
 #ifdef CONFIG_CLOUD_FIRESTORE_LIB_DEBUG
-  esp_log_level_set(TAG, ESP_LOG_DEBUG);
+  esp_log_level_set(TAG, ESP_LOG_INFO);
 #endif /* FIRESTORE_DEBUG */
   memset(&stCtx, 0x00, sizeof(stCtx));
   stCtx.stHttpconfig.host = CONFIG_CLOUD_FIRESTORE_HOSTNAME;
