@@ -32,9 +32,9 @@ firestore_err_t firestore_init(void)
   stCtx.stHttpconfig.port = CONFIG_CLOUD_FIRESTORE_HOST_PORT;
   stCtx.stHttpconfig.buffer_size = FIRESTORE_HTTP_INTERNAL_RX_BUF_SIZE;
   stCtx.stHttpconfig.buffer_size_tx = FIRESTORE_HTTP_INTERNAL_TX_BUF_SIZE;
-  stCtx.stHttpconfig.cert_pem = FIRESTORE_FIREBASE_CA_CERT_PEM;
   stCtx.stHttpconfig.event_handler = _firestore_http_event_handler;
 #ifdef CONFIG_CLOUD_FIRESTORE_USE_SSL
+  stCtx.stHttpconfig.cert_pem = FIRESTORE_FIREBASE_CA_CERT_PEM;
   stCtx.stHttpconfig.transport_type = HTTP_TRANSPORT_OVER_SSL;
 #else
   stCtx.stHttpconfig.transport_type = HTTP_TRANSPORT_OVER_TCP;
@@ -550,16 +550,16 @@ esp_err_t _firestore_http_event_handler(esp_http_client_event_t *pstEvent)
   switch(pstEvent->event_id)
   {
   case HTTP_EVENT_ERROR:
-    ESP_LOGI(TAG, "HTTP error");
+    ESP_LOGD(TAG, "HTTP error");
     break;
   case HTTP_EVENT_ON_CONNECTED:
-    ESP_LOGI(TAG, "HTTP connected to server");
+    ESP_LOGD(TAG, "HTTP connected to server");
     break;
   case HTTP_EVENT_HEADERS_SENT:
-    ESP_LOGI(TAG, "All HTTP headers are sent to server");
+    ESP_LOGD(TAG, "All HTTP headers are sent to server");
     break;
   case HTTP_EVENT_ON_HEADER:
-    ESP_LOGI(TAG, "HTTP header received: \t%s:%s",pstEvent->header_key,pstEvent->header_value);
+    ESP_LOGD(TAG, "HTTP header received: \t%s:%s",pstEvent->header_key,pstEvent->header_value);
     break;
   case HTTP_EVENT_ON_DATA:
     /* If user_data buffer is configured, copy the response into it */
@@ -573,13 +573,13 @@ esp_err_t _firestore_http_event_handler(esp_http_client_event_t *pstEvent)
     /* Else you can copy the response into a global HTTP buffer */
     break;
   case HTTP_EVENT_ON_FINISH:
-    ESP_LOGI(TAG, "HTTP session is finished");
+    ESP_LOGD(TAG, "HTTP session is finished");
     break;
   case HTTP_EVENT_DISCONNECTED:
-    ESP_LOGI(TAG, "HTTP connection is closed");
+    ESP_LOGD(TAG, "HTTP connection is closed");
     break;
   default:
-    ESP_LOGW(TAG, "HTTP Event Redirected");
+    ESP_LOGD(TAG, "HTTP Event Redirected");
   }
   return s32RetVal;
 }
