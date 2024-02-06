@@ -2,6 +2,8 @@
 #define __FIRESTORE_H__
 
 #include <stdint.h>
+#include "esp_http_client.h"
+#include "config.h"
 
 typedef enum
 {
@@ -13,6 +15,18 @@ typedef enum
   FIRESTORE_ERR_MCU           = -6,              /**< MCU error                */
   FIRESTORE_ERR_OS            = -7,              /**< Operating system error   */
 }firestore_err_t;
+
+
+typedef struct
+{
+  char tcPath[FIRESTORE_HTTP_PATH_SIZE];
+  uint32_t u32PathLen;
+  char tcHttpBody[FIRESTORE_HTTP_RX_BUF_SIZE];
+  uint32_t u32HttpBodyLen;
+  esp_http_client_handle_t pstHttpClient;
+  esp_http_client_config_t stHttpconfig;
+  int16_t s16LastHttpCode;
+}firestore_ctx_t;
 
 firestore_err_t firestore_init(void);
 firestore_err_t firestore_get_collection(char *pcCollectionId,

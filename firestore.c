@@ -1,4 +1,5 @@
 #include <string.h>
+#include "types.h"
 #include "esp_log.h"
 #include "esp_http_client.h"
 
@@ -9,23 +10,12 @@
 
 esp_err_t _firestore_http_event_handler(esp_http_client_event_t *pstEvent);
 
-typedef struct
-{
-  char tcPath[FIRESTORE_HTTP_PATH_SIZE];
-  uint32_t u32PathLen;
-  char tcHttpBody[FIRESTORE_HTTP_RX_BUF_SIZE];
-  uint32_t u32HttpBodyLen;
-  esp_http_client_handle_t pstHttpClient;
-  esp_http_client_config_t stHttpconfig;
-  int16_t s16LastHttpCode;
-}firestore_ctx_t;
-
-static firestore_ctx_t stCtx;
+STATIC firestore_ctx_t stCtx;
 
 firestore_err_t firestore_init(void)
 {
 #ifdef CONFIG_CLOUD_FIRESTORE_LIB_DEBUG
-  esp_log_level_set(TAG, ESP_LOG_INFO);
+  esp_log_level_set(TAG, ESP_LOG_DEBUG);
 #endif /* FIRESTORE_DEBUG */
   memset(&stCtx, 0x00, sizeof(stCtx));
   stCtx.stHttpconfig.host = CONFIG_CLOUD_FIRESTORE_HOSTNAME;
