@@ -28,7 +28,7 @@ firestore_err_t rtdb_init(void)
   #endif
 
   memset(&stRtdb, 0x00, sizeof(stRtdb));
-  stRtdb.stHttpconfig.host = host_path;
+  stRtdb.stHttpconfig.host = CONFIG_CLOUD_RTDBS_HOSTNAME;
   stRtdb.stHttpconfig.port = CONFIG_CLOUD_RTDBS_HOST_PORT;
   stRtdb.stHttpconfig.buffer_size = FIRESTORE_HTTP_INTERNAL_RX_BUF_SIZE;
   stRtdb.stHttpconfig.buffer_size_tx = FIRESTORE_HTTP_INTERNAL_TX_BUF_SIZE;
@@ -51,30 +51,25 @@ firestore_err_t rtdb_put_data(char *path, char *data)
     #ifdef CONFIG_CLOUD_DEV_MODE
     s32Length = snprintf(stRtdb.tcPath,
                          FIRESTORE_HTTP_PATH_SIZE,
-                         "%s:%d%s.json?ns=%s",
-                         CONFIG_CLOUD_RTDBS_HOSTNAME,
-                         CONFIG_CLOUD_RTDBS_HOST_PORT,
+                         "/%s.json?ns=%s",
                          path,
                          CONFIG_CLOUD_FIRESTORE_PROJECT_ID);
     #else
     s32Length = snprintf(stRtdb.tcPath,
                          FIRESTORE_HTTP_PATH_SIZE,
-                         "%s.%s:%d%s.json?auth=%s",
-                         CONFIG_CLOUD_FIRESTORE_PROJECT_ID,
-                         CONFIG_CLOUD_RTDBS_HOSTNAME,
-                         CONFIG_CLOUD_RTDBS_HOST_PORT,
+                         "%s.json?auth=%s",
                          path,
                          CONFIG_CLOUD_RTDBS_API_KEY);
     #endif
     eRetVal = FIRESTORE_OK;
 
-    if(true)
+     if(path != NULL && data != NULL)
     {
         if(s32Length > 0)
         {
             stRtdb.stHttpconfig.path = stRtdb.tcPath;
             ESP_LOGI(TAG, "HTTP path: %s", stRtdb.stHttpconfig.path);
-            ESP_LOGI(TAG, "HTTP data: %s", data);
+            ESP_LOGI(TAG, "HTTP data: %s (%d)", data,strlen(data));
             stRtdb.pstHttpClient = esp_http_client_init(&stRtdb.stHttpconfig);
             esp_http_client_set_method(stRtdb.pstHttpClient, HTTP_METHOD_PUT);
             esp_http_client_set_header(stRtdb.pstHttpClient, "Content-Type", "application/json");
@@ -118,18 +113,13 @@ firestore_err_t rtdb_post_data(char *path, char *data)
     #ifdef CONFIG_CLOUD_DEV_MODE
     s32Length = snprintf(stRtdb.tcPath,
                             FIRESTORE_HTTP_PATH_SIZE,
-                            "%s:%d%s.json?ns=%s",
-                            CONFIG_CLOUD_RTDBS_HOSTNAME,
-                            CONFIG_CLOUD_RTDBS_HOST_PORT,
+                            "%s.json?ns=%s",
                             path,
                             CONFIG_CLOUD_FIRESTORE_PROJECT_ID);
     #else
     s32Length = snprintf(stRtdb.tcPath,
                             FIRESTORE_HTTP_PATH_SIZE,
-                            "%s.%s:%d%s.json?auth=%s",
-                            CONFIG_CLOUD_FIRESTORE_PROJECT_ID,
-                            CONFIG_CLOUD_RTDBS_HOSTNAME,
-                            CONFIG_CLOUD_RTDBS_HOST_PORT,
+                            "%s.json?auth=%s",
                             path,
                             CONFIG_CLOUD_RTDBS_API_KEY);
     #endif
@@ -140,6 +130,7 @@ firestore_err_t rtdb_post_data(char *path, char *data)
     {
       stRtdb.stHttpconfig.path = stRtdb.tcPath;
       ESP_LOGI(TAG, "HTTP path: %s", stRtdb.stHttpconfig.path);
+      ESP_LOGI(TAG, "HTTP data: %s (%d)", data,strlen(data));
       stRtdb.pstHttpClient = esp_http_client_init(&stRtdb.stHttpconfig);
       esp_http_client_set_method(stRtdb.pstHttpClient, HTTP_METHOD_POST);
       esp_http_client_set_header(stRtdb.pstHttpClient, "Content-Type", "application/json");
@@ -148,7 +139,7 @@ firestore_err_t rtdb_post_data(char *path, char *data)
       {
         stRtdb.s16LastHttpCode = esp_http_client_get_status_code(stRtdb.pstHttpClient);
         ESP_LOGI(TAG,
-                 "HTTP PUT Status = %d, content_length = %lld",
+                 "HTTP POST Status = %d, content_length = %lld",
                  esp_http_client_get_status_code(stRtdb.pstHttpClient),
                  esp_http_client_get_content_length(stRtdb.pstHttpClient));
         if(200 != stRtdb.s16LastHttpCode)
