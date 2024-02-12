@@ -51,7 +51,7 @@ firestore_err_t rtdb_put_data(char *path, char *data)
     #ifdef CONFIG_CLOUD_DEV_MODE
     s32Length = snprintf(stRtdb.tcPath,
                          FIRESTORE_HTTP_PATH_SIZE,
-                         "/%s.json?ns=%s",
+                         "%s.json?ns=%s",
                          path,
                          CONFIG_CLOUD_FIRESTORE_PROJECT_ID);
     #else
@@ -167,64 +167,70 @@ firestore_err_t rtdb_post_data(char *path, char *data)
   return eRetVal;
 }
 
-// firestore_err_t firestore_get_collection(char *pcCollectionId,
-//                                          char **ppcDocs,
-//                                          uint32_t *pu32DocsLen)
-// {
+firestore_err_t rtdb_get_path(char *path,char **ppcDocs,uint32_t *pu32DocsLen)
+{
 
-//   int32_t s32Length;
-//   firestore_err_t eRetVal;
+  int32_t s32Length;
+  firestore_err_t eRetVal;
 
-//   eRetVal = FIRESTORE_OK;
-//   if(pcCollectionId)
-//   {
-//     s32Length = snprintf(stRtdb.tcPath,
-//                          FIRESTORE_HTTP_PATH_SIZE,
-//                          "/v1/projects/%s/databases/(default)/documents/%s?key=%s",
-//                          CONFIG_CLOUD_FIRESTORE_PROJECT_ID,
-//                          pcCollectionId,
-//                          CONFIG_CLOUD_FIRESTORE_API_KEY);
-//     if(s32Length > 0)
-//     {
-//       stRtdb.stHttpconfig.path = stRtdb.tcPath;
-//       ESP_LOGI(TAG, "HTTP path: %s", stRtdb.stHttpconfig.path);
-//       stRtdb.pstHttpClient = esp_http_client_init(&stRtdb.stHttpconfig);
-//       if(ESP_OK == esp_http_client_perform(stRtdb.pstHttpClient))
-//       {
-//         stRtdb.s16LastHttpCode = esp_http_client_get_status_code(stRtdb.pstHttpClient);
-//         ESP_LOGI(TAG,
-//                  "HTTP code: %d, content_length: %lld",
-//                  stRtdb.s16LastHttpCode,
-//                  esp_http_client_get_content_length(stRtdb.pstHttpClient));
-//         if(200 != stRtdb.s16LastHttpCode)
-//         {
-//           ESP_LOGE(TAG, "Firestore REST API call failed with HTTP code: %d", stRtdb.s16LastHttpCode);
-//           eRetVal = FIRESTORE_ERR_HTTP;
-//         }
-//         else
-//         {
-//           *ppcDocs = stRtdb.tcHttpBody;
-//           *pu32DocsLen = stRtdb.u32HttpBodyLen;
-//         }
-//       }
-//       else
-//       {
-//         eRetVal = FIRESTORE_ERR_HTTP;
-//       }
-//     }
-//     else
-//     {
-//       eRetVal = FIRESTORE_ERR;
-//     }
-//   }
-//   else
-//   {
-//     eRetVal = FIRESTORE_ERR_ARG;
-//   }
-//   stRtdb.u32HttpBodyLen = 0;
-//   esp_http_client_cleanup(stRtdb.pstHttpClient);
-//   return eRetVal;
-// }
+  eRetVal = FIRESTORE_OK;
+  if(path)
+  {
+    #ifdef CONFIG_CLOUD_DEV_MODE
+    s32Length = snprintf(stRtdb.tcPath,
+                            FIRESTORE_HTTP_PATH_SIZE,
+                            "%s.json?ns=%s",
+                            path,
+                            CONFIG_CLOUD_FIRESTORE_PROJECT_ID);
+    #else
+    s32Length = snprintf(stRtdb.tcPath,
+                            FIRESTORE_HTTP_PATH_SIZE,
+                            "%s.json?auth=%s",
+                            path,
+                            CONFIG_CLOUD_RTDBS_API_KEY);
+    #endif
+    if(s32Length > 0)
+    {
+      stRtdb.stHttpconfig.path = stRtdb.tcPath;
+      ESP_LOGI(TAG, "HTTP path: %s", stRtdb.stHttpconfig.path);
+      stRtdb.pstHttpClient = esp_http_client_init(&stRtdb.stHttpconfig);
+      esp_http_client_set_method(stRtdb.pstHttpClient, HTTP_METHOD_GET);
+      if(ESP_OK == esp_http_client_perform(stRtdb.pstHttpClient))
+      {
+        stRtdb.s16LastHttpCode = esp_http_client_get_status_code(stRtdb.pstHttpClient);
+        ESP_LOGI(TAG,
+                 "HTTP code: %d, content_length: %lld",
+                 stRtdb.s16LastHttpCode,
+                 esp_http_client_get_content_length(stRtdb.pstHttpClient));
+        if(200 != stRtdb.s16LastHttpCode)
+        {
+          ESP_LOGE(TAG, "Firestore REST API call failed with HTTP code: %d", stRtdb.s16LastHttpCode);
+          eRetVal = FIRESTORE_ERR_HTTP;
+        }
+        else
+        {
+          *ppcDocs = stRtdb.tcHttpBody;
+          *pu32DocsLen = stRtdb.u32HttpBodyLen;
+        }
+      }
+      else
+      {
+        eRetVal = FIRESTORE_ERR_HTTP;
+      }
+    }
+    else
+    {
+      eRetVal = FIRESTORE_ERR;
+    }
+  }
+  else
+  {
+    eRetVal = FIRESTORE_ERR_ARG;
+  }
+  stRtdb.u32HttpBodyLen = 0;
+  esp_http_client_cleanup(stRtdb.pstHttpClient);
+  return eRetVal;
+}
 
 
 // firestore_err_t firestore_get_document(char *pcCollectionId,
