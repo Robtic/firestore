@@ -51,7 +51,7 @@ firestore_err_t rtdb_put_data(char *path, char *data)
     #ifdef CONFIG_CLOUD_DEV_MODE
     s32Length = snprintf(stRtdb.tcPath,
                          FIRESTORE_HTTP_PATH_SIZE,
-                         "%s.json?ns=%s",
+                         "%s.json?ns=%s-default-rtdb",
                          path,
                          CONFIG_CLOUD_FIRESTORE_PROJECT_ID);
     #else
@@ -113,7 +113,7 @@ firestore_err_t rtdb_post_data(char *path, char *data)
     #ifdef CONFIG_CLOUD_DEV_MODE
     s32Length = snprintf(stRtdb.tcPath,
                             FIRESTORE_HTTP_PATH_SIZE,
-                            "%s.json?ns=%s",
+                            "%s.json?ns=%s-default-rtdb",
                             path,
                             CONFIG_CLOUD_FIRESTORE_PROJECT_ID);
     #else
@@ -179,7 +179,7 @@ firestore_err_t rtdb_get_path(char *path,char **ppcDocs,uint32_t *pu32DocsLen)
     #ifdef CONFIG_CLOUD_DEV_MODE
     s32Length = snprintf(stRtdb.tcPath,
                             FIRESTORE_HTTP_PATH_SIZE,
-                            "%s.json?ns=%s",
+                            "%s.json?ns=%s-default-rtdb",
                             path,
                             CONFIG_CLOUD_FIRESTORE_PROJECT_ID);
     #else
