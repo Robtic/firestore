@@ -68,8 +68,8 @@ firestore_err_t rtdb_put_data(char *path, char *data)
         if(s32Length > 0)
         {
             stRtdb.stHttpconfig.path = stRtdb.tcPath;
-            ESP_LOGI(TAG, "HTTP path: %s", stRtdb.stHttpconfig.path);
-            ESP_LOGI(TAG, "HTTP data: %s (%d)", data,strlen(data));
+            ESP_LOGD(TAG, "HTTP path: %s", stRtdb.stHttpconfig.path);
+            ESP_LOGD(TAG, "HTTP data: %s (%d)", data,strlen(data));
             stRtdb.pstHttpClient = esp_http_client_init(&stRtdb.stHttpconfig);
             esp_http_client_set_method(stRtdb.pstHttpClient, HTTP_METHOD_PUT);
             esp_http_client_set_header(stRtdb.pstHttpClient, "Content-Type", "application/json");
@@ -77,7 +77,7 @@ firestore_err_t rtdb_put_data(char *path, char *data)
             if(ESP_OK == esp_http_client_perform(stRtdb.pstHttpClient))
             {
                 stRtdb.s16LastHttpCode = esp_http_client_get_status_code(stRtdb.pstHttpClient);
-                ESP_LOGI(TAG,
+                ESP_LOGD(TAG,
                             "HTTP PUT Status = %d, content_length = %lld",
                             esp_http_client_get_status_code(stRtdb.pstHttpClient),
                             esp_http_client_get_content_length(stRtdb.pstHttpClient));
@@ -129,8 +129,8 @@ firestore_err_t rtdb_post_data(char *path, char *data)
     if(s32Length > 0)
     {
       stRtdb.stHttpconfig.path = stRtdb.tcPath;
-      ESP_LOGI(TAG, "HTTP path: %s", stRtdb.stHttpconfig.path);
-      ESP_LOGI(TAG, "HTTP data: %s (%d)", data,strlen(data));
+      ESP_LOGD(TAG, "HTTP path: %s", stRtdb.stHttpconfig.path);
+      ESP_LOGD(TAG, "HTTP data: %s (%d)", data,strlen(data));
       stRtdb.pstHttpClient = esp_http_client_init(&stRtdb.stHttpconfig);
       esp_http_client_set_method(stRtdb.pstHttpClient, HTTP_METHOD_POST);
       esp_http_client_set_header(stRtdb.pstHttpClient, "Content-Type", "application/json");
@@ -138,7 +138,7 @@ firestore_err_t rtdb_post_data(char *path, char *data)
       if(ESP_OK == esp_http_client_perform(stRtdb.pstHttpClient))
       {
         stRtdb.s16LastHttpCode = esp_http_client_get_status_code(stRtdb.pstHttpClient);
-        ESP_LOGI(TAG,
+        ESP_LOGD(TAG,
                  "HTTP POST Status = %d, content_length = %lld",
                  esp_http_client_get_status_code(stRtdb.pstHttpClient),
                  esp_http_client_get_content_length(stRtdb.pstHttpClient));
@@ -192,13 +192,13 @@ firestore_err_t rtdb_get_path(char *path,char **ppcDocs,uint32_t *pu32DocsLen)
     if(s32Length > 0)
     {
       stRtdb.stHttpconfig.path = stRtdb.tcPath;
-      ESP_LOGI(TAG, "HTTP path: %s", stRtdb.stHttpconfig.path);
+      ESP_LOGD(TAG, "HTTP path: %s", stRtdb.stHttpconfig.path);
       stRtdb.pstHttpClient = esp_http_client_init(&stRtdb.stHttpconfig);
       esp_http_client_set_method(stRtdb.pstHttpClient, HTTP_METHOD_GET);
       if(ESP_OK == esp_http_client_perform(stRtdb.pstHttpClient))
       {
         stRtdb.s16LastHttpCode = esp_http_client_get_status_code(stRtdb.pstHttpClient);
-        ESP_LOGI(TAG,
+        ESP_LOGD(TAG,
                  "HTTP code: %d, content_length: %lld",
                  stRtdb.s16LastHttpCode,
                  esp_http_client_get_content_length(stRtdb.pstHttpClient));
