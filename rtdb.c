@@ -17,15 +17,6 @@ firestore_err_t rtdb_init(void)
 #ifdef CONFIG_CLOUD_FIRESTORE_LIB_DEBUG
   esp_log_level_set(TAG, ESP_LOG_DEBUG);
 #endif /* FIRESTORE_DEBUG */
-  
-  char host_path[64];
-  memset(&host_path,'\0',64);
-  // Firebase does not use project ID in the domain, it uses it with &ns=<project_id> in request query
-  #ifdef CONFIG_CLOUD_DEV_MODE
-  sprintf(host_path,"%s",CONFIG_CLOUD_RTDBS_HOSTNAME);
-  #else
-  sprintf(host_path,"%s.%s",CONFIG_CLOUD_FIRESTORE_PROJECT_ID,CONFIG_CLOUD_RTDBS_HOSTNAME);
-  #endif
 
   memset(&stRtdb, 0x00, sizeof(stRtdb));
   stRtdb.stHttpconfig.host = CONFIG_CLOUD_RTDBS_HOSTNAME;
